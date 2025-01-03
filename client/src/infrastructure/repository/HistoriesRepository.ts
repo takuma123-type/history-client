@@ -1,6 +1,8 @@
 import axios from "axios";
 import { API } from "../API";
 import { RepositoryError } from "./errors";
+import { CreateHistory } from "../../models/presentation/CreateHistory";
+import { History } from "../../models/presentation/History";
 
 // CookieからauthTokenを取得する関数
 const getAuthTokenFromCookie = (): string | null => {
@@ -8,24 +10,16 @@ const getAuthTokenFromCookie = (): string | null => {
   return match ? decodeURIComponent(match[2]) : null;
 };
 
-interface History {
-  position: { id: string; name: string };
-  scale: { id: string; people: string };
-  core_stack: { id: string; name: string };
-  infrastructure: { id: string; name: string };
-  period: string;
-  company_name: string;
-  project_name: string;
-  contents: string;
-  others: string;
-}
-
 interface CreateHistoryResponse {
   id: string;
 }
 
+interface FetchHistoriesResponse {
+  histories: History[];
+}
+
 export class HistoriesRepository {
-  async create(historyData: History): Promise<CreateHistoryResponse> {
+  async create(historyData: CreateHistory): Promise<CreateHistoryResponse> {
     const token = getAuthTokenFromCookie();
     if (!token) {
       throw new RepositoryError("Authorization token is missing", null);
@@ -53,4 +47,36 @@ export class HistoriesRepository {
       throw new RepositoryError("Failed to create history", error);
     }
   }
+
+  async fetch(): Promise<History[]> {
+    const token = getAuthTokenFromCookie();
+    if (!token) {
+      throw new RepositoryError("Authorization token is missing", null);
+    }
+  
+    try {
+      const response = await axios.get<History[]>(
+        API.createURL(API.URL.histories()),
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      console.log("HistoriesRepository fetch response:", response);
+  
+      // デバッグ: response全体とresponse.dataを確認
+      if (response.status === 200 && response.data) {
+        return response.data;
+      } else {
+        console.error("Unexpected response format:", response);
+        throw new RepositoryError("Unexpected response format", response);
+      }
+    } catch (error) {
+      console.error("Error in HistoriesRepository fetch:", error);
+      throw new RepositoryError("Failed to fetch histories", error);
+    }
+  }
+  
 }
