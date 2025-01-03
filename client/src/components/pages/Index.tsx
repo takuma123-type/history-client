@@ -4,6 +4,7 @@ import Button from '../atoms/Button';
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Checkbox, Paper, CircularProgress } from '@mui/material';
 import { Link } from 'react-router-dom';
 import { FetchHistoriesUsecase } from '../../usecases/FetchHistoriesUsecase';
+import { ExportHistoryUsecase } from '../../usecases/ExportHistoryUsecase';
 import { HistoriesRepository } from '../../infrastructure/repository/HistoriesRepository';
 import { RepositoryError } from '../../infrastructure/repository/errors';
 import { FetchHistoryItem } from '../../models/presentation/FetchHistoryItem';
@@ -11,6 +12,7 @@ import { FetchHistoryItem } from '../../models/presentation/FetchHistoryItem';
 const Index: React.FC = () => {
   const [histories, setHistories] = useState<FetchHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedHistoryId, setSelectedHistoryId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchHistories = async () => {
@@ -36,13 +38,30 @@ const Index: React.FC = () => {
     fetchHistories();
   }, []);
 
+  const handleExport = async () => {
+    if (!selectedHistoryId) {
+      alert('エクスポートする履歴を選択してください。');
+      return;
+    }
+
+    const historiesRepository = new HistoriesRepository();
+    const exportHistoryUsecase = new ExportHistoryUsecase(historiesRepository);
+    try {
+      await exportHistoryUsecase.export(selectedHistoryId);
+      alert('エクスポートが成功しました。');
+    } catch (error) {
+      console.error('Error exporting history:', error);
+      alert('エクスポートに失敗しました。');
+    }
+  };
+
   return (
     <>
       <Header />
       <Box mt={2}>
         <Box display="flex" m={2}>
           <Box m={1}>
-            <Button label="エクスポート" variant="contained" color="primary" />
+            <Button label="エクスポート" variant="contained" color="primary" onClick={handleExport} />
           </Box>
           <Box m={1}>
             <Link to="/create-history">
@@ -70,9 +89,9 @@ const Index: React.FC = () => {
             </TableHead>
             <TableBody>
               {histories.map((history) => (
-                <TableRow key={history.id}>
+                <TableRow key={history.id} onClick={() => setSelectedHistoryId(history.id)}>
                   <TableCell padding="checkbox">
-                    <Checkbox />
+                    <Checkbox checked={selectedHistoryId === history.id} />
                   </TableCell>
                   <TableCell>{history.company_name}</TableCell>
                   <TableCell>{history.created_at}</TableCell>

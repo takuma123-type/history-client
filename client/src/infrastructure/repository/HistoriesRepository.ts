@@ -78,5 +78,34 @@ export class HistoriesRepository {
       throw new RepositoryError("Failed to fetch histories", error);
     }
   }
-  
+
+  async export(historyId: string): Promise<void> {
+    const token = getAuthTokenFromCookie();
+    if (!token) {
+      throw new RepositoryError("Authorization token is missing", null);
+    }
+
+    try {
+      const response = await axios.get(
+        API.createURL(`${API.URL.histories()}/${historyId}/export`),
+        {
+          headers: {
+            "Authorization": `Bearer ${token}`,
+          },
+          responseType: 'blob', // バイナリデータとしてレスポンスを受け取る
+        }
+      );
+
+      const url = window.URL.createObjectURL(new Blob([response.data as BlobPart]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', 'history.xlsx'); // ダウンロードするファイル名
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (error) {
+      console.error("Error in HistoriesRepository export:", error);
+      throw new RepositoryError("Failed to export history", error);
+    }
+  }
 }
