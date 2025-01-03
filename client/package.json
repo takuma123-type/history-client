@@ -19,6 +19,7 @@
     "@mui/material": "^6.3.0",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.9",
+    "axios-error": "^1.0.4",
     "dotenv": "^16.4.7",
     "js-cookie": "^3.0.5",
     "process": "^0.11.10",

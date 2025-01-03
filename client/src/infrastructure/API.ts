@@ -4,6 +4,11 @@ export class API {
   public static URL = {
     sign_up: () => `${this.BASE_PATH}/sessions/sign_up`,
     log_in: () => `${this.BASE_PATH}/sessions/log_in`,
+    infrastructures: () => `${this.BASE_PATH}/infrastructures`,
+    scales: () => `${this.BASE_PATH}/scales`,
+    positions: () => `${this.BASE_PATH}/positions`,
+    core_stacks: () => `${this.BASE_PATH}/core_stacks`,
+    histories: () => `${this.BASE_PATH}/histories`,
   };
 
   public static createURL(url: string): string {

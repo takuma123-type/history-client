@@ -13,3 +13,9 @@ export class FailGetUserIconPresignedUrlError extends Error{}
 export class FailSignInError extends Error{}
 export class FailCreateOldGirlError extends Error{}
 export class FailUpdateProfileError extends Error{}
+export class RepositoryError extends Error {
+  constructor(message: string, public readonly details?: any) {
+    super(message);
+    this.name = "RepositoryError";
+  }
+}
