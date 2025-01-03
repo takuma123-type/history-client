@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Container, TextField, Button, Typography, Box, Link as MuiLink } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Link as MuiLink, Backdrop, CircularProgress } from '@mui/material';
 import Header from "../organisms/Header";
 import { SessionsRepository } from "../../infrastructure/repository/SessionsRepository";
 import { LogInUsecase, LogInInput } from "../../usecases/LogInUsecase";
@@ -9,10 +9,12 @@ import { useNavigate, Link as RouterLink } from "react-router-dom";
 export default function SignIn() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth(); // useAuth を利用
 
   const handleLogIn = async () => {
+    setLoading(true);
     const input = new LogInInput({ email, password });
     const sessionRepository = new SessionsRepository();
     const usecase = new LogInUsecase(input, sessionRepository);
@@ -30,6 +32,8 @@ export default function SignIn() {
       }
     } catch (error) {
       console.error("ログイン失敗:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -74,6 +78,9 @@ export default function SignIn() {
           新規作成
         </MuiLink>
       </Box>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }

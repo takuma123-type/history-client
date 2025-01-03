@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, TextField, Button, Typography, Box, Link as MuiLink } from '@mui/material';
+import { Container, TextField, Button, Typography, Box, Link as MuiLink, Backdrop, CircularProgress } from '@mui/material';
 import Header from '../organisms/Header';
 import { SignUpInput, SignUpUsecase } from "../../usecases/SignUpUsecase";
 import { SessionsRepository } from "../../infrastructure/repository/SessionsRepository";
@@ -9,9 +9,11 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSignUp = async () => {
+    setLoading(true);
     const input = new SignUpInput({ email, password, name });
     const sessionsRepository = new SessionsRepository();
     const signUpUsecase = new SignUpUsecase(input, sessionsRepository);
@@ -28,6 +30,8 @@ export default function SignUp() {
     } catch (error) {
       alert("サインアップに失敗しました。再度お試しください。");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,6 +84,9 @@ export default function SignUp() {
           ログイン
         </MuiLink>
       </Box>
+      <Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open={loading}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </>
   );
 }
