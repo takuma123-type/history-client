@@ -17,6 +17,8 @@
     "@fontsource/roboto": "^5.1.1",
     "@mui/icons-material": "^6.3.0",
     "@mui/material": "^6.3.0",
+    "@playwright/experimental-ct-react": "^1.49.1",
+    "@playwright/test": "^1.49.1",
     "@types/js-cookie": "^3.0.6",
     "axios": "^1.7.9",
     "axios-error": "^1.0.4",
