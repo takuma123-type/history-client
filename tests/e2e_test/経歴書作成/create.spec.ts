@@ -47,7 +47,7 @@ async function fillTextbox(page: Page, labelName: string, value: string): Promis
 /**
  * テストケース
  */
-test('test', async ({ page }) => {
+test('経歴書の作成', async ({ page }) => {
   await login(page, 'test111@test.com', 'password');
 
   await page.getByRole('button', { name: NEW_BUTTON_NAME }).click();
